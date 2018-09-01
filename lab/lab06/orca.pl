@@ -16,5 +16,5 @@ for $filename (@ARGV) {
             print "Sorry couldn't parse: $line\n";
         }
     }
-    print "$current_count Orcas reported in whales.txt\n";
+    print "$current_count Orcas reported in $filename\n";
 }
