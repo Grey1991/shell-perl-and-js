@@ -1,0 +1,5 @@
+23/09/17	22:30	23:48	recursive version of subset 0 done (First night in Tasmania)
+27/09/17  20:30 21:30 recursive subset 1 almost done (Forgot to commit on the plane back to Sydney)
+29/09/17  16:30 17:45 recursive subset 1&2 done
+29/09/17  19:30 21:24 subset 3 almost done except multi_line if
+01/10/17  13:45 18:53 subset 3&4 done

@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block body_contents %}
+<link href="{{url_for('static', filename='line_break.css')}}" rel="stylesheet">
+<div class="container">
+  <!-- profile text-->
+  <div class="jumbotron">
+  <h3>My profile text:</h3>
+  <p>
+    {{database[zid]['text']}}
+  </p>
+  </div>
+<div class="row">
+  <!-- headings -->
+  <div class="col-md-4">
+    <div class="page-header">
+        <h2>{{database[zid]["full_name"]}}</h2>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="page-header">
+        <h2>My Posts </h2>
+    </div>
+
+  </div>
+  <div class="col-md-4">
+    <div class="page-header">
+        <h2>Friends' Posts</h2>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="row">
+
+      <!-- profile photo -->
+      <div class="col-md-6">
+      <h4><img src="{{students_dir}}/{{zid}}/img.jpg" width="170" height="170" alt="No Profile Photo"/></h4>
+      </div>
+
+
+      <!-- details -->
+      <div class="col-md-6">
+        <b>zID<br /></b>{{database[zid]["zid"]}}<br />
+        <b>Program<br /></b>{{database[zid]["program"]}}<br />
+        <b>Birthday<br /></b>{{database[zid]["birthday"]}}<br />
+        <b>Suburb<br /></b>{{database[zid]["home_suburb"]}}<br />
+        {%if zid != user and zid in database[user]['request']%}
+        <a href="{{url_for('home')}}accept/{{zid}}"><button type="submit" class="btn btn-sm btn-success">Accept request</button></a>
+        {%elif zid != user and user in database[zid]['request']%}
+        <button type="submit" class="btn btn-sm btn-default">Added</button>
+        {%elif zid != user and zid not in database[user]['friends']%}
+        <a href="{{url_for('home')}}add/{{zid}}"><button type="submit" class="btn btn-sm btn-success">Add</button></a>
+        {%endif%}
+        {%if zid != user and zid in database[user]['friends']%}
+        <a href="{{url_for('home')}}remove/{{zid}}"><button type="submit" class="btn btn-sm btn-danger">Remove</button></a>
+        {%endif%}
+      </div>
+    </div>
+
+    <!-- friedn list -->
+    <div class="page-header">
+        <h2>Friend List</h2>
+    </div>
+      <div class="list-group">
+            <a href="{{url_for('home')}}friends" class="list-group-item active">
+              Click to view more
+            </a>
+            {% for friend in database[zid]["friends"] %}
+            {%if friend%}
+            <a href = "{{url_for('home')}}{{friend}}" class="list-group-item"><li><img src="{{students_dir}}/{{friend}}/img.jpg" width="33" height="32" alt=""/>{{database[friend]["full_name"]}} </li></a>
+            {%endif%}
+            {% endfor %}
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- my post -->
+    <div class="panel panel-info">
+      <div class="panel-heading">
+      <h3 class="panel-title">Make Post</h3>
+      </div>
+      <div class="panel-body">
+        <form role="form" method="POST" action="{{url_for('home')}}{{user}}">
+          <div class="form-group">
+            <textarea class="form-control" rows="3" name="post_text"></textarea>
+          </div>
+          <div clas="row">
+            <div class="col-md-9"></div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-sm btn-primary">POST</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <form method="POST" action="{{url_for('home')}}MPosts/{{zid}}">
+      <input type="text" class="form-control" placeholder="Enter to search my posts.." name="pattern">
+    </form>
+    <br/>
+    {% for student,key in sorted_key%}
+      {% if  student == zid and (key|length) == 1%}
+        <div class="panel panel-info">
+          <div class="panel-heading">
+          <h3 class="panel-title">{{posts[zid][key]['time']}}</h3>
+          </div>
+          <div class="panel-body">
+            <div id="just-line-break">{{posts[zid][key]['message']|safe}}</div>
+            <div class="row">
+              <div class="col-md-8">
+              {% if posts[zid][key]['longitude'] and posts[zid][key]['latitude'] %}
+              <font color="#3366FF" size="1">{{posts[zid][key]['longitude']}}°N, {{posts[zid][key]['latitude']}}°W</font>
+              {%endif%}
+              </div>
+              <div class="col-md-4">
+                <a href = "{{url_for('home')}}replys/{{zid + "_" + posts[zid][key]['raw']}}"><button type="button" class="btn btn-sm btn-info">View/Reply</button></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {%endif%}
+    {%endfor%}
+  </div>
+
+  <!-- friends posts -->
+  <div class="col-md-4">
+    <form method="POST" action="{{url_for('home')}}FPosts/{{zid}}">
+      <input type="text" class="form-control" placeholder="Enter to search friends' posts.." name="pattern">
+    </form>
+    <br/>
+    {% for student,key in sorted_key%}
+      {% if  student in database[zid]['friends'] and (key|length)== 1%}
+        <div class="panel panel-warning">
+          <div class="panel-heading">
+          <h3 class="panel-title">{{posts[student][key]['time']}}</h3>
+          </div>
+          <div class="panel-body">
+            <a href = "{{url_for('home')}}{{student}}"><img src="{{students_dir}}/{{student}}/img.jpg" width="25" height="25" alt=""/><font color="#CC9966">{{database[student]["full_name"]}}:</font></a>
+            <div id="just-line-break">{{posts[student][key]['message']|safe}}</div>
+            <div class="row">
+              <div class="col-md-8">
+              {% if posts[student][key]['longitude'] and posts[student][key]['latitude'] %}
+              <font color="#CC9966" size="1">{{posts[student][key]['longitude']}}°N, {{posts[student][key]['latitude']}}°W</font>
+              {%endif%}
+              </div>
+              <div class="col-md-4">
+                <a href = "{{url_for('home')}}replys/{{student + "_" + posts[student][key]['raw']}}"><button type="button" class="btn btn-sm btn-warning">View/Reply</button></a>
+
+              </div>
+          </div>
+        </div>
+      </div>
+      {%endif%}
+    {%endfor%}
+  </div>
+</div>
+
+<div class="row">
+
+</div>
+
+</div>
+
+
+
+
+{% endblock %}

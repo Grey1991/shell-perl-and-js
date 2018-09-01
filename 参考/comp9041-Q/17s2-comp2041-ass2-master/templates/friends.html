@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block body_contents %}
+<div class="container theme-showcase" role="main">
+  <div class="row">
+    <!-- friend list -->
+    <div class="col-md-6">
+      <div class="list-group">
+            <a href="#" class="list-group-item active">
+                Friend List
+            </a>
+              {%for friend in database[user]['friends']%}
+              {%if friend%}
+              <a href = "{{url_for('home')}}{{friend}}" class="list-group-item"><li><img src="/{{students_dir}}/{{friend}}/img.jpg" width="33" height="32" alt=""/>{{database[friend]["full_name"]}} </li></a>
+              {%endif%}
+              {% endfor %}
+      </div>
+    </div>
+
+    <!-- friend request -->
+    <div class="col-md-6">
+      <div class="list-group">
+            <a href="#" class="list-group-item active">
+                Friend Requests
+            </a>
+            {%for friend in database[user]['request']%}
+            {%if friend%}
+            <a href = "{{url_for('home')}}{{friend}}" class="list-group-item"><li><img src="/{{students_dir}}/{{friend}}/img.jpg" width="33" height="32" alt=""/>{{database[friend]["full_name"]}} </li></a>
+            {%endif%}
+            {% endfor %}
+      </div>
+
+      <!-- friend suggestion -->
+      <div class="list-group">
+            <a href="#" class="list-group-item active">
+                Friends you may know
+            </a>
+            {%for friend in result%}
+            <a href = "{{url_for('home')}}{{friend}}" class="list-group-item"><li><img src="/{{students_dir}}/{{friend}}/img.jpg" width="33" height="32" alt=""/>{{database[friend]["full_name"]}} </li></a>
+            {% endfor %}
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

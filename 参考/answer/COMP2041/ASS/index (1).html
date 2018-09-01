@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>
+
+Assignment 2 - UNSWtalk
+
+</title>
+
+
+
+<link href="/~cs2041/flask.cgi/static/bootstrap.min.css?121200" rel="stylesheet">
+<link href="/~cs2041/flask.cgi/static/course.css?6554" rel="stylesheet">
+<script type="text/javascript" src="/~cs2041/flask.cgi/static/jquery.min.js?95992"></script>
+<script type="text/javascript" src="/~cs2041/flask.cgi/static/bootstrap.min.js?37045"></script>
+<script type="text/javascript" src="/~cs2041/flask.cgi/static/course.js?1631"></script>
+<link rel="canonical" href="https://cgi.cse.unsw.edu.au/~cs2041/" />
+</head>
+<body>
+
+
+
+
+<div class="container">
+
+<div id="heading">
+
+
+<a class="heading_link" target="_blank" id="left_heading_link" href="http://www.cse.unsw.edu.au/~cs2041/17s2/">COMP[29]041 17s2</a>
+
+
+
+Assignment 2 - UNSWtalk
+
+
+
+<a class="heading_link" target="_blank" id="right_heading_link" href="http://www.cse.unsw.edu.au/~cs2041/17s2/">Software Construction</a>
+
+</div>
+
+</div>
+
+
+
+<h2>Aims</h2>
+
+<p>
+This assignment aims to give you:
+<ul>
+<li> an introduction to the issues involved in programming for the web.
+<li> experience in constructing a web application.
+<li> Perl/Python programming generally.
+</ul>
+<b>Note:</b> the material in the lecture notes will not be sufficient
+by itself to allow you to complete this assignment.
+You may need to search on-line documentation for CGI, Perl/Python etc.
+Being able to search documentation efficiently for the information you need is a
+<em>very</em> useful skill for any kind of computing work.
+
+<h2>Introduction</h2>
+
+Andrew has decided he will make himself rich exploiting COMP[29]041 students' coding skills .
+Andrew's plan is to have COMP[29]041 students create a social media platform for UNSW students called <i>UNSWtalk</i>
+Because Andrew is unaware of any other competing  social media platforms, he thinks
+<i>UNSWtalk</i> will become very popular and he will become rich.
+<p>
+He wants <i>UNSWtalk</i> to allow students to post messages, other students to  comment on these messges
+and replies to these comments to be added.
+<p>
+He wants <i>UNSWtalk</i> to allows students  to indicate other students are their <i>friends</i>.
+<p>
+Your task is to produce either Python or Perl code which provides the core features of <i>UNSWtalk</i>.
+<p>
+In other words your task is to implement a simple but fully functional social media web site.
+<p>
+But don't panic, the assessment for this assignment (see below) will allow you to obtain
+a reasonable mark if you successfully complete some basic features.
+
+<h2>Data Sets</h2>
+
+You have been provided with 3  datasets containing the <i>UNSWtalk</i> details of  (synthetic) UNSW students & their postings:
+<ul>
+<li> <a href="dataset-small">small</a> (4Mb unpacked) <a href="dataset-small.zip">zip</a> (0.4Mb) <a href="dataset-small.tar.xz">tar.xz</a> (0.1Mb) - 10 students, 42 posts, 209 comments, 163 replies
+<li> <a href="dataset-medium">medium</a> (44Mb unpacked) <a href="dataset-medium.zip">zip</a> (4Mb) <a href="dataset-medium.tar.xz">tar.xz</a> (0.8Mb) - 42 students, 420 posts, 2520 comments, 1749 replies
+<li> <a href="dataset-large">large</a> (340Mb unpacked) <a href="dataset-large.zip">zip</a> (28Mb) <a href="dataset-large.tar.xz">tar.xz</a> (8Mb)  - 420 students, 3525 posts, 19080 comments, 13277 replies
+</ul>
+<p>
+I expect most people will work with <i>medium</i> or <i>large</i> datasets.
+During debugging you may find the <i>small</i> dataset useful.
+<p>
+The information for each student is in a separate directory named with their zid name
+For example in the <i>medium</i> dataset UNSW student Alexandre Despatie has zid z5192930 so his information is in the directory:
+<a href="dataset-medium/z5198807/"><code>dataset-medium/z5198807/</code></a>
+<p>
+Each  <i>UNSWtalk</i> student's directory contains a file named <code>student.txt</code> containing
+relevant information that the <i>UNSWtalk</i> student has supplied.
+<p>
+For example <a href="dataset-medium/z5198807/student.txt">dataset-medium/z5198807/student.txt</a>
+contains Alexandre's details:
+
+<pre class="program">
+home_latitude: -33.7492
+courses: (2017 S1 ACCT1501, 2017 S1 COMP1511, 2017 S1 ECON1101, 2017 S1 MATH1131, 2017 S2 COMP1531, 2017 S2 COMP2521, 2017 S2 MARK1012, 2017 S2 MGMT1001)
+home_longitude: 151.1093
+program: Commerce / Computer Science
+zid: z5198807
+email: z5198807@unsw.edu.au
+birthday: 1999-05-29
+friends: (z5194082, z5190129, z5196684, z5191841, z5197178, z5191824, z5193757, z5194685)
+password: cream
+full_name: Alexandre Despatie
+</pre>
+
+Note Alexandre has supplied the suburb where he lives and the coordinates of his home address.
+Notice also the list of Alexandre' friends.
+<p>
+Most <i>UNSWtalk</i> students will also have an image  present in the same directory named <code>img.jpg</code>.
+For example <a href="dataset-medium/z5198807/img.jpg"><code>dataset-medium/z5198807/img.jpg</code></a>
+contains Alexandre's image.
+<p>
+<img src="dataset-medium/z5198807/img.jpg">
+<p>
+Note some details may be missing for some <i>UNSWtalk</i> students.
+This is deliberate, it indicates the <i>UNSWtalk</i> student has chosen not to supply this information
+and your web site should handle this sensibly. Also images might not be present for all students.
+Again your web site should handle this sensibly.
+<p>
+Also present in a  students's <i>UNSWtalk</i> directory may be files containing posts they've made
+in numbered sub-directories.
+<p>
+For example <a href="dataset-large/z5196613/4.txt">dataset-large/z5196613/4.txt</a> contains:
+
+<pre class="program">
+message: To the cute indian guy (I think your name is Arian..?)\nYou looked like a total hottie in the Elec tutorial last week <3\nCoffee and chill? ;)
+from: z5196613
+longitude: 151.2261
+time: 2016-04-27T12:52:42+0000
+latitude: -33.9081
+</pre>
+
+Also in  students's <i>UNSWtalk</i> directory may be files with  <code>comments</code> on posts.
+<p>
+For example <a href="dataset-large/z5196613/4-2.txt">dataset-large/z5196613/4-2.txt</a> contains:
+
+<pre class="program">
+time: 2016-04-26T07:55:01+0000
+from: z5193182
+message: HAHAHAHAHAHA okay which one of you was this z5192183 z5192541 z5196164 z5197797
+</pre>
+
+Note this mentions 4 other <i>UNSWtalk</i> students  using the <i>UNSWtalk</i> convention of referencing other students with their zid.
+<p>
+Note this is a comment on the post <a href="dataset-large/z5196613/4.txt">dataset-large/z5196613/4.txt</a>
+<p>
+Also in  students's <i>UNSWtalk</i> directory may be files with  <code>replies</code> to comments.
+<p>
+For example <a href="dataset-large/z5196613/4-2-1.txt">dataset-large/z5196613/4-2-1.txt</a> contains:
+
+<pre class="program">
+message: omg i really hope this is legit
+from: z5192183
+time: 2016-04-26T08:10:31+0000
+</pre>
+
+You are free to modify the dataset and the data format in any way you choose.
+Your code should still assume  details may be absent from  <i>UNSWtalk</i> student details,
+ posts and comments because <i>UNSWtalk</i> students choose not to supply them.
+<p>
+While you do not have to use this format to store data, I expect most students
+will do so and unless you are very confident, it is recommended you do so.
+<p>
+If you use another data format
+you should import the large dataset into this format and have it available
+when you demo your web site so searches can be conducted using a familiar set of <i>UNSWtalk</i> students.
+<p>
+Before choosing to use a database to store <i>UNSWtalk</i> student data,
+note it can be tricky getting full-fledged database systems such as mysql set up on CSE systems
+and Andrew (& tutors) won't be able to offer any help.
+If you do choose to use a database sqlite is recommended because its embedded,
+and hence much simpler to setup, but again Andrew (& tutors) won't be able to help.
+
+<h2>Subsets</h2>
+
+To assist you tackling the assignment, requirements have been broken into several levels in
+approximate order of difficulty.  You do not have to follow this implementation order but
+unless you are confident I'd recommend following this order.
+
+You will receive marks for whatever features you have working or partially working
+ (regardless of subset & order).
+
+<h4>Display Student Information &amp; Posts (Level 0)</h4>
+
+The starting-point script you've been given (see below) displays student information
+in raw form and does not display their image or posts.
+<p>
+Your web site should display student information
+in nicely formatted HTML with appropriate accompanying text.  It should
+display the student's image if there is one.
+<p>
+Private information such e-mail, password, lat, long and courses should not be displayed.
+<p>
+The student's posts should be displayed in reverse chronological order.
+
+<h4>Interface (Level 0) </h4>
+
+Your web site must generate nicely formatted convenient-to-use web pages
+including appropriate navigation facilities and instructions for naive students.
+Although this is not a graphic design exercise you should produce pages with a common
+and somewhat distinctive look-and-feel. You may find CSS useful for this.
+<p>
+As part of your personal design you may change the name of the website to something
+other than  UNSWtalk but the primary CGI script has to be <code>UNSWtalk.cgi</code>.
+
+<h4>Friend list (Level 1)</h4>
+
+When a UNSWtalk page is shown a list of the names of that student's friends
+should be displayed.
+<p>
+The list should include a thumbnail image of the friend (if they have a profile image).
+<p>
+Clicking on the image and/or name should take you to that UNSWtalk page.
+
+<h4>Search for Names (Level 1)</h4>
+
+Your web site should provide searching for a student whose name contains a
+specified substring.  Search results should include the matching name
+and a thumbnail image.  Clicking on the image and/or name should
+take you to that UNSWtalk page.
+
+<h4>Logging In & Out (Level 1)</h4>
+
+Students should have to login to use UNSWtalk.
+<p>
+Their password should be checked when they attempt to log in.
+<p>
+Students should also be able to logout.
+
+
+<h4>Displaying Posts (Level 2)</h4>
+
+When a student logs in they should see their recent posts, any posts from their friends
+and any posts which contain their zid in the post, comments or replies.
+<p>
+Comments and replies should be shown appropriately with posts.
+<p>
+When displaying posts zids should be replaced with a link to the student's UNSWtalk page.
+The link text should be the student's full name.
+
+<h4>Making Posts (Level 2)</h4>
+
+Students should be able to make posts.
+
+<h4>Searching Posts (Level 2)</h4>
+
+It should be possible to search for posts containing particular words.
+
+<h4>Commenting on Post and replying to Comments (Level 2) </h4>
+
+When viewing a post, it should be possible to click on a link and create a comment on that post.
+
+When viewing a comment, it should be possible to click on a link and create a reply to that comment.
+
+<h4>Friend/Unfriend Students (Level 3)</h4>
+
+A student should be able to add & delete students from their friend list.
+
+<h4>Pagination of Posts & Search Results (Level 3)</h4>
+
+When searching for students or posts and when viewing posts
+the students be shown the first <i>n</i> (e.g n == 16) results.
+They should be able then view the next  <i>n</i> and the next <i>n</i> and so on.
+
+<h4>Student Account Creation (Level 3) </h4>
+
+Your web site should allow students to create accounts with a
+zid, password and e-mail address.
+You should  of course check
+that an account for this zid does not exist already.
+It should  be compulsory that a valid e-mail-address is associated with an account but
+the e-mail address need not be a UNSW address.
+<p>
+You should confirm the e-mail address is valid and owned by the <i>UNSWtalk</i> student creating the account by
+e-mailing them a link necessary to complete account creation.
+<p>
+I expect (and recommend) most students to use the data format of the data set
+you've been supplied.  If so for a new student you would need create
+a directory named with their zid and then add a appropriate <code>student.txt</code>
+containing their details.
+
+<h4>Profile Text (Level 3) </h4>
+
+A <i>UNSWtalk</i> student should be able to add to some text to their details, probably
+describing their interests, which is displayed with their student details.
+
+<pre class="program">
+<i>
+My interests are long walks on the beach and Python programming.
+I plan to use what I've learnt COMP9041 to cure the world of all known diseases.
+</i>
+</pre>
+
+It should be possible to use some simple (safe) HTML
+tags, and only these tags, in this text.
+
+The data set you've been given doesn't include any examples of such text.
+<p>
+You can choose to store this text in the <code>student.txt</code> file or elsewhere.
+
+<h4>Friend Requests (Level 3) </h4>
+
+A student, when viewing a UNSWtalk page, should be able to send a <i>friend request</i>
+to the owner of that UNSWtalk page.  The other student  should be notified
+by an e-mail. The e-mail should contain an appropriate link to the web site
+which will allow them to accept or reject the friend request.
+
+<h4>Friend Suggestions (Level 3)</h4>
+
+Your web site should be able  to provide a list of likely friend suggestions.
+<p>
+Your web site should display UNSWtalk students  sorted on how likely the
+student is to know them.
+It should  display a set (say 10) of UNSWtalk students.
+It should allow the next best-matching set of potential friends or the
+previous set of potential friends to be viewed.
+<p>
+The student should be able to
+click on a potential friend, see their UNSWtalk page (where they will
+be able to send them a friend request).
+<p>
+Your matching algorithm should assume that people who have taken the same course in
+the same session may know each other.
+<p>
+ For example
+<a href="dataset-medium/z5198410/student.txt">Reese Witherspoon</a> and
+<a href="dataset-medium/z5198491/student.txt">James Franco</a> are both taking
+<i>2017 S2 MATH1231</i> which should cause your algorithm
+to make Reese a more likely friend suggestion
+for James (and vice-versa).
+<p>
+Your matching algorithm should also  assume that people may know friends of their friends.
+<p>
+You may choose to have your matching algorithm  use other parts of student details.
+<p>
+Note there are many choices in this matching algorithm so your results will
+differ from other students.  Be prepared to explain how & why your matching algorithm works during
+your assignment demo.  You may chose to have a development mode available which
+when turned on displays extra information regarding the matching.
+
+<h4>Password Recovery (Level 3)</h4>
+
+Students should be able to recover/change lost passwords via having an  e-mail sent to them.
+
+<h4>Uploading &amp; Deleting  Images (Level 3)</h4>
+
+In addition to their jpg image students should also be allowed to add a background image.
+
+A student should be able to upload/change/delete both background & profile images.
+
+The lecture CGI examples include one for uploading a file.
+
+<h4>Editing Information (Level 3) </h4>
+
+A student should be able to edit their details and change their profile images.
+
+<h4>Deleting Posts (Level 3) </h4>
+
+A <i>UNSWtalk</i> student should also be able to delete any of their posts, comments or replies.
+
+<h4>Suspending/Deleting UNSWtalk Account (Level 3) </h4>
+
+A <i>UNSWtalk</i> student not currently interested in UNSWtalk  should be able to suspend their
+account. A suspended account is not visible to other students.
+<p>
+A <i>UNSWtalk</i> student should also be able to delete their account completely.
+
+<h4>Notifications (Level 3) </h4>
+
+A student should be able to indicate they wish to be  notified by e-mail
+in one of these events:
+
+<ul>
+<li> their zid is mentioned in a post, comment or reply
+<li> they get a  friend request
+</ul>
+
+
+<h4>Including Links, Images & Videos (Level 3) </h4>
+
+A student should be able to include links, images and videos
+in a post, comment or reply.  These should be appropriately displayed when the item is viewed.
+
+<h4>Privacy (Level 3) </h4>
+
+A student should be able to make part or all of the content of
+their UNSWtalk page visible only to their friends.
+
+<h4>Advanced Features (Level 4) </h4>
+
+If you wish to obtain over 90% you should consider adding features beyond those above.
+Marks will be available for extra features.
+
+<h2>Getting Started</h2>
+
+<h3>Setting Up Your Git Repository</h3>
+
+You should first clone the  gitlab.cse.unsw.edu.au repository for this assignment
+<pre class="command_line">
+<kbd class="shell">cd</kbd>
+<kbd class="shell">mkdir -p public_html/ass2</kbd>
+<kbd class="shell">priv webonly public_html/ass2</kbd>
+<kbd class="shell">cd public_html/ass2</kbd>
+<kbd class="shell">git clone gitlab@gitlab.cse.unsw.EDU.AU:z5555555/17s2-comp2041-ass2 .</kbd>
+Cloning into '.'...
+<kbd class="shell">chmod 644 .htaccess</kbd>
+<kbd class="shell">unzip /web/cs2041/17s2/assignments/UNSWtalk/dataset-medium.zip</kbd>
+....
+</pre>
+
+If the git clone above fails - redo the instructions in assignment 1 for adding your
+ssh key to gitlab.
+<p>
+And if that fail try with a https url instead (again replacing 5555555 with your zid) -
+and supplying your zid/zpass when requested:
+
+<pre class="command_line">
+<kbd class="shell">git clone https://gitlab.cse.unsw.edu.au/z5555555/17s2-comp2041-ass2.git .</kbd>
+Username for 'https://gitlab.cse.unsw.edu.au': <kbd>z5555555</kbd>
+Password for 'https://z5080336@gitlab.cse.unsw.edu.au':
+</pre>
+
+
+<h3>Starting Code</h3>
+
+
+Here is the <a href="UNSWtalk.cgi.txt">source</a> to a Perl script
+with crude partial implementation of Level 0.
+You may choose to use this script as a starting point for your assignment.
+<p>
+This CGI scripts refers to a CSS file named <a href="UNSWtalk.css">UNSWtalk.css</a>.
+It contains some simple CSS you can use as a starting point, but don't spend  too much time on CSS - almost all
+the marks are for coding!
+<p>
+A Flask Python version of the same code is also available as a <a href="flask.zip">zip file</a>.
+You may choose to start with this code if you prefer to do the assignment in Python.
+The zip file includes <a href="UNSWtalk.css">UNSWtalk.css</a>.
+<p>
+Then if you want to use the starting code Python and Flask do this:
+
+<pre class="command_line">
+<kbd class="shell">unzip /web/cs2041/17s2/assignments/UNSWtalk/flask.zip</kbd>
+...
+<kbd class="shell">git add static templates UNSWtalk.cgi UNSWtalk.py</kbd>
+</pre>
+
+
+If instead you want to use the starting code for Perl do this:
+
+<pre class="command_line">
+<kbd class="shell">cp /web/cs2041/17s2/assignments/UNSWtalk/UNSWtalk.cgi .</kbd>
+<kbd class="shell">cp /web/cs2041/17s2/assignments/UNSWtalk/UNSWtalk.css .</kbd>
+<kbd class="shell">chmod 644 UNSWtalk.css</kbd>
+<kbd class="shell">chmod 700 UNSWtalk.cgi</kbd>
+<kbd class="shell">git add UNSWtalk.cgi UNSWtalk.css</kbd>
+</pre>
+
+
+In both cases should be able to run the starting code as a CGI script
+by replacing z5555555 in the url below with your zid:
+
+<pre class="command_line">
+<kbd class="shell">firefox http://cgi.cse.unsw.edu.au/~z5555555/ass2/UNSWtalk.cgi &amp;</kbd>
+</pre>
+
+If you are using Flask you run the starting code directly on a CSE lab machine:
+
+<pre class="command_line">
+<kbd class="shell">./UNSWtalk.py</kbd>
+ * Running on http://127.0.0.1:5000/
+ * Restarting with reloader
+</pre>
+
+<pre class="command_line">
+<kbd class="shell">firefox  http://127.0.0.1:5000/ &amp;</kbd>
+</pre>
+
+This won't work on  a CSE login server or Vlab.
+
+
+<h3>Updates To Python starting Code</h3>
+
+The first line of the  Python starting point code has been updated
+to be <code>#!/web/cs2041/bin/python3.6.3</code>
+<p>
+<code>/web/cs2041/bin/python3.6.3</code> a Python version with an upto date set of modules installed.
+<p>
+The script <code>UNSWtalk.cgi</code>  allows <code>UNSWtalk.py</code> to be run as
+a CGI script has been updated since the assignment was released to give
+useful information that than just a 500 error when an exception occurs in
+<code>UNSWtalk.py</code>.  You can get the latest version with this command:
+
+<pre class="command_line">
+<kbd class="shell">cp -p /web/cs2041/17s2/assignments/UNSWtalk/flask/UNSWtalk.cgi  ~/public_html/ass2/UNSWtalk.cgi</kbd>
+</pre>
+
+DO NOT DO THIS if you are doing the assignment in Perl - it would overwrite your Perl in <code>UNSWtalk.cgi</code>.
+
+<h3>Pushing to Gitlab</h3>
+
+Every time you work on the assignment you must push work to gitlab
+
+<pre class="command_line">
+<kbd class="shell">vi UNSWtalk.cgi</kbd>
+<kbd class="shell">vi diary.txt</kbd>
+<kbd class="shell">git add diary.txt</kbd>
+<kbd class="shell">git commit -a -m 'added code for basic formatting'</kbd>
+<kbd class="shell">git push</kbd>
+....
+<kbd class="shell">git commit -a -m 'tidied up assignment for submission'</kbd>
+<kbd class="shell">git push</kbd>
+<kbd class="shell">give cs2041 ass2 UNSWtalk.cgi diary.txt</kbd>
+....
+</pre>
+
+
+I expect most students will just work in their CSE account and push work to gitlab.cse.unsw.edu.au
+from CSE, but you can try setting up a git repository on your home machine
+and pushing work to gitlab.cse.unsw.edu.au from there.
+<p>
+You will need to use a CSE vpn to access gitlab from outside UNSW.
+<p>
+If you do this you'll want to
+use git's pull command to update the repository in your CSE account.
+<p>
+<pre class="command_line">
+<kbd class="shell">git pull</kbd>
+Unpacking objects: 100% (3/3), done.
+From gitlab@gitlab.cse.unsw.EDU.AU/z5555555/17s2-comp2041-ass2.git
+   226cddf..e64fee9  master     -> origin/master
+Updating 226cddf..e64fee9
+Fast-forward
+ UNSWtalk.cgi |    1 +
+ 1 file changed, 1 insertion(+)
+</pre>
+
+<!--
+
+You can complete this assignment just by running CGI scripts from CSE account.
+Some students find it convenient to install a webserver on their personal machine
+so they can run CGI scripts locally.  There are multiple ways to this all of which
+depend on the software available on your machine.  Here are
+ <a href="docker.html">instructions for running a webserver using Docker</a>.
+-->
+
+<h2>Assumptions/Clarifications</h2>
+
+It is a requirement of the assignment that when you work the assignment for
+more than a few minutes you push the work to <code>gitlab.cse.unsw.edu</code> (see above).
+<p>
+You are permitted to use Perl  or Python to implement this assignment.
+You may not use other languages except you may use Javascript for part of the assignment.
+A high mark for the assignment can be obtained without Javascript.
+<p>
+You may use any Perl or Python package which is installed on CSE's system.
+<p>
+You may use general purpose, publicly available (open source) Javascript libraries (e.g. JQuery),
+CSS (e.g. Bootstrap) or HTML - make sure use of other people's work is clearly acknowledged and distinguished
+from your own work.
+<p>
+You can not otherwise use code written by another person.
+<p>
+You may submit multiple CGI files but the primary file must be named UNSWtalk.cgi
+You may submit other files used by your CGI script(s).
+<p>
+If you submit an executable named <code>init</code>, it will be run once before before your
+assignment, in the same directory as your assignment.  This is provide the possibility of set up
+code for complex assignments.  I expect only a few student will need this.
+<p>
+Make sure you submit all files and in the appropriate hierarchy.
+If for example you do URL rewriting in a <code>.htaccess</code> file (I'm
+not expecting or recommending this), make sure you submit the .htaccess file.
+<p>
+Your CGI script must run on CSE's system. It will be run from a class account so you
+must submit all necessary files and do not hard code absolute URLs or pathnames in your code.
+<p>
+Do not use a URL like <code>http://www.cse.unsw.edu.au/~z5555555/ass2/subdir/background.html</code> in your code -
+use a relative URL like  <code>"subdir/background.html"</code>.
+<p>
+Similarly don't put a pathnames such as <code>/home/z5555555/public_html/ass2/subdir/datafile"</code>
+in your code - use a relative pathname such as <code>"subdir/datafile"</code>
+<p>
+You scripts will accessed via a  <b>https</b> URL at the demo session so check it works with
+https, e.g. when you access it as <code>https://www.cse.unsw.edu.au/~z5555555/ass2/UNSWtalk.cgi</code>
+<p>
+For this reason do not use <b>http</b> URLs for external resources (e.g. Bootstrap) use a <b>https</b> URL.
+<p>
+We will use firefox(iceweasel) on CSE lab machines for the demo session. Your code should
+be sufficiently portable to work on with that version of firefox  but you will be allowed to demo on Chrome
+instead but again on a CSE lab machine.
+<p>
+You should avoid running external programs (via system, subprocess, back quotes or open)
+where an equivalent operation could be performed simply in Perl/Python.
+You may be penalized in the handmarking if you do so.
+<p>
+You are permitted to run an external program to send e-mail, although this
+is possible from Perl &amp; Python.
+<p>
+You are only required to provide basic security - using a hidden field
+to store student's password in plaintext is OK. More sophisticated security may qualify as an
+extra feature for subset 4.
+<p>
+You should follow  discussion about the assignment in the
+<a href="https://piazza.com/class/j5ji4vjjra62a3">course forum</a>.
+All questions about the assignment should be posted there unless they concern your private circumstances.
+This allows all students to see all answers to questions.
+<p>
+Here are two example functions that send email in
+<a href="send_email.py.txt">Python</a> and <a href="send_email.pl.txt">Perl</a>
+
+<h2>Diary</h2>
+You must keep a record of your work on this assignment as you did for assignment in an ASCII file
+The entries should include date, starting &amp; finishing time, and a brief (one or two line) description of
+the work carried out.
+For example:
+
+<table class="table table-bordered">
+<tr><th>Date<th>Start<th>Stop<th>Activity<th>Comments
+<tr><td>29/10<td>16:00<td>17:30<td>coding<td>implemented creation of student accounts
+<tr><td>30/10<td>20:00<td>10:30<td>debugging<td>found bug in handling of zids
+</table>
+
+Include these notes in the files you submit as an ASCII file named diary.txt.
+<p>
+Some students choose to store this information in git commit messages
+and use a script to generate  <code>diary.txt</code> from <code>git log</code> before they submit.
+You are welcome to do this.
+
+<h2>Assessment</h2>
+
+Assignment 2 will contribute 15 marks to your final COMP2041/9041 mark
+<p>
+Assignment 2 marking occurs in peer assessment sessions.
+Details of the peer assessment sessions will be announced in week 13.
+Your must attend one  peer assessment sessions.
+<p>
+80% of the marks for assignment 2 will come frome
+your submitted CGI script being tested against a specified set of operations and assessed
+by fellow students.
+You will be present to assist in determining what features are and are not
+working, you will also be able to indicate any extra features you have implemented.
+<p>
+20% of the marks for assignment 2  will be awarded on the basis of clarity,
+commenting, elegance and style of your code.  In other words, your fellow students will assess how
+easy it is for a human to read and understand your program.
+<P>
+Here is an indicative marking scheme .
+<P>
+<table  class="table table-bordered table-striped">
+<tr><td align=right>100%<td>Elegant Perl/Python with an excellent implementation of levels 0-3 and
+some optional (level 4) features
+<tr><td align=right>HD++%<td>Very well written Perl/Python which implements levels 0-3 successfully
+<tr><td align=right>HD (85+)<td>Well written Perl/Python which implements most of levels 0-3 successfully
+<tr><td align=right>DN (75+)<td>Readable Perl/Python which implements of levels 0-2 successfully
+<tr><td align=right>CR (65+)<td>Reasonably readable code which implements level 0-1 successfully
+<tr><td align=right>PS (55+)<td>Reasonably readable code which implements level 0 successfully
+<tr><td align=right>45%<td>Major progress on the assignment with some things working/almost working
+<tr><td align=right>-70%<td>Knowingly supplying  work to any other person which is subsequently submitted by another student.
+<tr><td>0 FL for COMP2041/9041<td>Submitting any other person's work with their consent.  This includes joint work.
+<tr><td>academic misconduct<td>Submitting another person's work without their consent.
+</table>
+<p>
+The lecturer may vary the assessment scheme after inspecting
+the assignment submissions but its likely to be broadly similar to the above.
+
+<h2>Originality of Work</h2>
+
+The work you submit must be your own work.  Submission of work partially or completely derived
+from any other person or jointly written with any other person is not permitted.
+The penalties for such an offence may include negative marks,
+automatic failure of the course and possibly suspension from UNSW.
+Assignment submissions will be examined both automatically and manually
+for such submissions.
+<p>
+Relevant scholarship authorities will be informed if students holding scholarships
+are involved in an incident of plagiarism or other misconduct.
+<p>
+Plagiarism or other misconduct can also result in loss of student visas.
+<p>
+Do not provide or show your assignment work to any other person - apart from the teaching staff
+of COMP2041/9041.
+If you knowingly provide or show your assignment work to another person for any
+reason, and work derived from it is submitted you may be penalized, even
+if the work was submitted without your knowledge or consent.  This may
+apply even if your work is submitted by a third party unknown to you.
+<p>
+Note, you will not be penalized if your work is
+taken without your consent or knowledge.
+
+<h2>Submission</h2>
+
+This assignment is  due at 23:59pm Sunday October 29.
+Submit the assignment using <I>give</I>.
+<p>
+If you have need to submit many other files, files in a sub-directory or a
+directory hierarchy, submit them as a tar file named files.tar.  For example
+if you have subdirectories named <i>css</i>, <i>js</i> and <i>images</i>, this
+will submit all the files in them (including directories they contain).
+<p>
+Do not submit the datasets unless you have changed them.
+<p>
+For example if you complete the assignment using Python and had files
+in the sub-directories <code>static</code> and <code>templates</code>,
+you might submit the assignment using these commands:
+
+<pre class="command_line">
+<kbd class="shell">tar -Jcf files.tar static templates</kbd>
+<kbd class="shell">give cs2041 ass2 UNSWtalk.cgi UNSWtalk.py diary.txt files.tar</kbd>
+</pre>
+
+For example if you complete the assignment using Perl and had files
+in the sub-directories <code>css</code>, <code>js</code> and <code>images</code>, you might submit the assignment
+uysing these commands:
+
+<pre class="command_line">
+<kbd class="shell">tar -Jcf files.tar css js images</kbd>
+<kbd class="shell">give cs2041 ass2 UNSWtalk.cgi diary.txt files.tar</kbd>
+</pre>
+
+If your assignment is submitted after this date, each hour it is late reduces
+the maximum mark it can achieve by 0.5% for the first 48 hours.
+<p>
+After the first 48 hours, each hour it is late reduces the maximum mark it can achieve
+by 4 marks an hour.
+<p>
+For example if an assignment worth 90% was submitted
+5 hours late, the late submission would have no effect.
+If the same assignment was submitted 30 hours late it would be awarded
+85%, the maximum mark it can achieve at that time.
+
+<ul>
+</ul>
+<a href="flask"></a>
+
+
+
+
+
+</div>
+
+
+<!--
+public_html_session_directory=/web/cs2041/17s2
+base_directory=/web/cs2041/17s2
+public_html_directory=/web/cs2041
+scripts_directory=/web/cs2041/17s2/scripts
+home_directory=/home/cs2041
+bin_directory=/home/cs2041/bin
+course_account=cs2041
+course_code=COMP2041
+course_number=2041
+postgraduate_course_code=COMP9041
+course_name=Software Construction
+unsw_session=17s2
+canonical_url=https://cgi.cse.unsw.edu.au/~cs2041/
+github_repo_url=https://github.com/COMP2041UNSW/course_materials
+course_forum_url=https://piazza.com/class/j5ji4vjjra62a3
+lecture_recordings_url=https://moodle.telt.unsw.edu.au/course/view.php?id=27708
+WORK=/web/cs2041/17s2/work
+OUT=/web/cs2041/17s2/work/.out
+MARKED=/web/cs2041/17s2/work/.out/.marked
+SMSDB=/web/cs2041/17s2/work/17s2db.sms
+tlb_directory=/web/cs2041/17s2/tlb
+lecture_directory=/web/cs2041/17s2/lec
+flask_cache_directory=/web/cs2041/17s2/flask_cache
+testing_results_file=/web/cs2041/17s2/work/testing_results.json
+enrollments_file=/web/cs2041/17s2/work/enrollments.json
+unsw_ldap_password_file=/web/cs2041/.unsw_ldap_password
+autotest_upload_url=https://cgi.cse.unsw.edu.au/~cs2041/cgi/autotest_upload.cgi
+PATH=/web/cs2041/17s2/scripts:/home/cs2041/bin:/bin/:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/home/class/bin:/home/give/stable/bin.:/bin:/usr/bin:/usr/local/bin
+directory_relative_pathname=assignments/UNSWtalk
+url=https://cgi.cse.unsw.edu.au/~cs2041/flask.cgi/assignments/UNSWtalk/index.html
+directory_url=https://cgi.cse.unsw.edu.au/~cs2041/assignments/UNSWtalk/
+url_root=https://cgi.cse.unsw.edu.au/~cs2041/
+script_root=/~cs2041/flask.cgi
+current_lecture_topic=exam
+current_week=13
+template_pathname=assignments/UNSWtalk/index.html
+directory_absolute_pathname=/web/cs2041/17s2/assignments/UNSWtalk
+current_directory=/web/cs2041/17s2/assignments/UNSWtalk
+
+-->
+
+</body>
+</html>

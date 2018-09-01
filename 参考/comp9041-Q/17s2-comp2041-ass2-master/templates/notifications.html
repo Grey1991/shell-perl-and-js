@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block body_contents %}
+<div class="container theme-showcase" role="main">
+  <div class="row">
+    <div class="col-md-3">
+    </div>
+    <div class="col-md-6">
+      {% for student,key in result%}
+          {%set zid = student%}
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+            <h3 class="panel-title">{{posts[zid][key]['time']}}</h3>
+            </div>
+            <div class="panel-body">
+              <a href = "{{url_for('home')}}{{student}}"><img src="/{{students_dir}}/{{student}}/img.jpg" width="25" height="25" alt=""/><font color="#CC9966">{{database[student]["full_name"]}}:</font></a>
+              <div id="just-line-break">{{posts[zid][key]['message']|safe}}</div>
+              <div class="row">
+                <div class="col-md-9">
+                {% if posts[zid][key]['longitude'] and posts[zid][key]['latitude'] %}
+                <font color="#3366FF" size="1">{{posts[zid][key]['longitude']}}°N, {{posts[zid][key]['latitude']}}°W</font>
+                {%endif%}
+                </div>
+                <div class="col-md-3">
+                  <a href = "{{url_for('home')}}replys/{{zid + "_" + posts[zid][key]['raw']}}"><button type="button" class="btn btn-sm btn-warning">View/Reply</button></a>
+                </div>
+              </div>
+            </div>
+          </div>
+      {%endfor%}
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,86 @@
+<!-- modified from bootstrap opensource -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<title>unswtalk</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+<form class="form-horizontal" action='' method="POST">
+  <fieldset>
+    <div id="legend">
+      <legend class="">Register</legend>
+    </div>
+    <div class="control-group">
+      <!-- Username -->
+      <label class="control-label"  for="username">zID</label>
+      <div class="controls">
+        <input type="text" id="username" name="zid" placeholder="" class="input-xlarge">
+        <p class="help-block">
+          {%if error["zid"] == 1%}
+          <font color="red">Not valid zID.</font>
+          {%elif error["zid"] == 2%}
+          <font color="red">zID already exists.</font>
+          {%else%}
+          Please provide your zID
+          {%endif%}
+        </p>
+      </div>
+    </div>
+    <div class="control-group">
+      <!-- Username -->
+      <label class="control-label"  for="username">Full name</label>
+      <div class="controls">
+        <input type="text" id="username" name="full_name" placeholder="" class="input-xlarge">
+        <p class="help-block">
+          Please provide your full name
+        </p>
+      </div>
+    </div>
+    <div class="control-group">
+      <!-- E-mail -->
+      <label class="control-label" for="email">E-mail</label>
+      <div class="controls">
+        <input type="text" id="email" name="email" placeholder="" class="input-xlarge">
+        <p class="help-block">
+          {%if error["email"]%}
+          <font color="red">Not valid email.</font>
+          {%else%}
+          Please provide your E-mail
+          {%endif%}
+        </p>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <!-- Password-->
+      <label class="control-label" for="password">Password</label>
+      <div class="controls">
+        <input type="password" id="password" name="password_a" placeholder="" class="input-xlarge">
+        <p class="help-block">Input your password</p>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <!-- Password -->
+      <label class="control-label"  for="password_confirm">Password (Confirm)</label>
+      <div class="controls">
+        <input type="password" id="password_confirm" name="password_b" placeholder="" class="input-xlarge">
+        <p class="help-block">
+          {%if error["password"]%}
+          <font color="red">Not identical.</font>
+          {%else%}
+          Please confirm password
+          {%endif%}
+        </p>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <!-- Button -->
+      <div class="controls">
+        <button class="btn btn-success">Register</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+</head>

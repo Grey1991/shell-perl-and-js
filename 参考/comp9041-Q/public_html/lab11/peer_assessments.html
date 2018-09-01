@@ -1,0 +1,19 @@
+{% extends "peer_base.html" %}
+
+{% block body %}
+These assessments have been entered for you:
+<p>
+  <ul>
+    {% for mark in assessments %}
+        <li>
+          <b>{{mark['grade']}}</b>
+          from {{mark['id']}} {{mark['name']}}
+        </li>
+    {% endfor %}
+  </ul>
+
+
+<p>
+Your overall grade is the median of the above: <b>{{medium}}</b>
+
+{% endblock %}

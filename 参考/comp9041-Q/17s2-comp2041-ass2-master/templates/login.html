@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<title>unswtalk</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<link href="{{url_for('static', filename='sign_in.css')}}" rel="stylesheet">
+<div class="container">
+  <form method="post" class="form-signin" action="">
+    <h2 class="form-signin-heading">Please sign in</h2>
+    <input class="form-control" placeholder="zID" name="zid">
+    <input class="form-control" type="password" placeholder="password" name="password">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <div class="form-signin-heading"><font color="red">{{error}}</font></div>
+    <a href="{{url_for('home')}}signup">Sign up</a><br/>
+    <a href="{{url_for('home')}}recovery"> Forgot password</a>
+  </form>
+</div> <!-- /container -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+</html>
