@@ -1,4 +1,8 @@
 #!/usr/bin/perl -w
+use File::Compare;
+use File::Basename;
+use File::Copy;
+
 sub Init {
     die "legit.pl: error: .legit already exists\n" if -d ".legit";
     mkdir ".legit";
@@ -19,72 +23,87 @@ sub is_folder_empty {
     return scalar( grep { $_ ne "." && $_ ne ".." } readdir($dh) ) == 0;
 }
 
+sub if_modify {
+  $dir1 = $_[0];
+  $dir2 = $_[1];
+  @files1 = glob("$dir1/*");
+  @files2 = glob("$dir2/*");
+  return 1 unless scalar(@files1) == scalar(@files2);
+  foreach $file (@files1) {
+    $filename = basename($file);
+    return 1 unless compare("$file","$dir2/$filename") == 0;
+  }
+  return;
+}
+
 sub Add {
 
     # error if not init
     die "legit.pl: error: no .legit directory containing legit repository exists\n"
-      if !-d ".legit";
+      unless -d ".legit";
 
     # error if add a non-exist file
     foreach $file (@_) {
       check_filename(@_);
-      die "legit.pl: error: can not open '$file'\n" if !-f $file;
+      die "legit.pl: error: can not open '$file'\n" unless -f $file;
     }
-
-
 
     # copy files to index
     foreach $file (@_) {
-        open DATA1, "<", $file or die;
-        open DATA2, ">", ".legit/index/$file";
-        while ( $line = <DATA1> ) {
-            print DATA2 $line;
-        }
-        close DATA1;
-        close DATA2;
+      copy($file,".legit/index/$file");
     }
 }
 
 sub Commit {
 
     # error if not init
-    die
-"legit.pl: error: no .legit directory containing legit repository exists\n"
-      if !-d ".legit";
+    die "legit.pl: error: no .legit directory containing legit repository exists\n"
+      unless -d ".legit";
 
     # nothing follow commit
-    die "usage: legit.pl commit [-a] -m commit-message\n" if !@_;
+    die "usage: legit.pl commit [-a] -m commit-message\n"
+      unless @_;
     $option = shift @_;
     if ( $option eq "-m" ) {
 
         # error no or more than one message
         die "usage: legit.pl commit [-a] -m commit-message\n" if scalar @_ != 1;
 
-        # commit brefor add
-        die "nothing to commit\n" if is_folder_empty(".legit/index");
+        # check if message valid
+        $message = shift @_;
+        die "usage: legit.pl commit [-a] -m commit-message\n" if ($message =~ /^ *$/)||($message =~ /^-+/);
 
-        $message      = shift @_;
+        # commit before add
+        print "nothing to commit\n" and exit(0)
+          if is_folder_empty(".legit/index");
+
+        # get current commit index number
         $index_number = 0;
         if ( -f ".legit/log.txt" ) {
             open FILE, "<", ".legit/log.txt";
             $index_number++ while (<FILE>);
             close FILE;
-            open FILE, ">>", ".legit/log.txt";
-            print FILE "$index_number $message\n";
-            close FILE;
-        }
-        else {
-            open FILE, ">", ".legit/log.txt";
-            print FILE "$index_number $message\n";
-            close FILE;
         }
 
-        mkdir ".legit/commit" if !-d "/.legit/commit";
+        # commit without change
+        if ($index_number > 0) {
+          $last_index_number = $index_number -1;
+          print "nothing to commit\n" and exit(0)
+            unless if_modify(".legit/index",".legit/commit/commit_$last_index_number");
+        }
+        # write log
+        open FILE, ">>", ".legit/log.txt";
+        print FILE "$index_number $message\n";
+        close FILE;
+
+
+        mkdir ".legit/commit" unless -d "/.legit/commit";
         $dir = ".legit/commit/commit_$index_number";
         mkdir $dir;
         foreach $file ( glob ".legit/index/*" ) {
-            $file =~ s/^.legit\/index\///;
             open DATA1, "<", $file        or die;
+            # $file =~ s/^.legit\/index\///;
+            $file = basename($file);
             open DATA2, ">", "$dir/$file" or die;
             while ( $line = <DATA1> ) {
                 print DATA2 $line;
@@ -99,7 +118,7 @@ sub Commit {
 sub Log {
   # error if not init
   die "legit.pl: error: no .legit directory containing legit repository exists\n"
-    if !-d ".legit";
+    unless -d ".legit";
 
   # error if more arguments
   die "usage: legit.pl log\n"
@@ -120,7 +139,7 @@ sub Show {
 
     # error if not init
     die "legit.pl: error: no .legit directory containing legit repository exists\n"
-      if !-d ".legit";
+      unless -d ".legit";
 
     # error if not commit
     die "legit.pl: error: your repository does not have any commits yet\n"
@@ -144,7 +163,7 @@ sub Show {
     if ($show_dir eq '') {
       check_filename($show_file);
       die "legit.pl: error: '$show_file' not found in index\n"
-        if !-f ".legit/index/$show_file";
+        unless -f ".legit/index/$show_file";
       open FILE, "<", ".legit/index/$show_file";
       print $line while ($line = <FILE>);
       close FILE;
@@ -154,13 +173,13 @@ sub Show {
 
       # error no match commit
       die "legit.pl: error: unknown commit '$show_dir'\n"
-        if !-d ".legit/commit/commit_$show_dir";
+        unless -d ".legit/commit/commit_$show_dir";
 
       check_filename($show_file);
 
       # error no match file in commit
       die "legit.pl: error: '$show_file' not found in commit $show_dir\n"
-        if !-f ".legit/commit/commit_$show_dir/$show_file";
+        unless -f ".legit/commit/commit_$show_dir/$show_file";
       open FILE, "<", ".legit/commit/commit_$show_dir/$show_file";
       print $line while ($line = <FILE>);
       close FILE;
@@ -173,3 +192,4 @@ Add(@ARGV)    if $arg eq "add";
 Commit(@ARGV) if $arg eq "commit";
 Log(@ARGV)    if $arg eq "log";
 Show(@ARGV)   if $arg eq "show";
+if_modify(@ARGV) if $arg eq "diff";
