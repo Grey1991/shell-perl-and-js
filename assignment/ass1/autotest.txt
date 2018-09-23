@@ -1,0 +1,227 @@
+Your program produced these 3 lines of output:
+$ touch a
+$ legit.pl add a
+*** TEST STOPPED: no output from legit.pl
+
+The correct 3 lines of output for this test were:
+$ touch a
+$ legit.pl add a
+legit.pl: error: no .legit directory containing legit repository exists
+
+The difference between your output(-) and the correct output(+) is:
+...
+  $ legit.pl add a
+- *** TEST STOPPED: no output from legit.pl
++ legit.pl: error: no .legit directory containing legit repository exists
+
+
+
+
+Test subset0_4 (add with non-existent file) - failed (Incorrect output)
+Your program produced these 4 lines of output:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ legit.pl add non_existent_file
+*** TEST STOPPED: no output from legit.pl
+
+The correct 4 lines of output for this test were:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ legit.pl add non_existent_file
+legit.pl: error: can not open 'non_existent_file'
+
+The difference between your output(-) and the correct output(+) is:
+...
+  $ legit.pl add non_existent_file
+- *** TEST STOPPED: no output from legit.pl
++ legit.pl: error: can not open 'non_existent_file'
+
+
+
+
+Test subset0_5 (add, commit, show) - failed (Incorrect output)
+Your program produced these 7 lines of output:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo 1 >a
+$ legit.pl add a
+$ echo 2 >a
+$ legit.pl commit -m message
+*** TEST STOPPED: no output from legit.pl
+
+The correct 12 lines of output for this test were:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo 1 >a
+$ legit.pl add a
+$ echo 2 >a
+$ legit.pl commit -m message
+Committed as commit 0
+$ echo 3 >a
+$ legit.pl show 0:a
+1
+$ legit.pl show :a
+1
+
+The difference between your output(-) and the correct output(+) is:
+...
+  $ legit.pl commit -m message
+- *** TEST STOPPED: no output from legit.pl
++ Committed as commit 0
++ $ echo 3 >a
++ $ legit.pl show 0:a
++ 1
++ $ legit.pl show :a
++ 1
+
+
+
+
+
+Test subset0_6 (show) - failed (Incorrect output)
+Your program produced these 7 lines of output:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo line 1 >a
+$ echo hello world >b
+$ legit.pl add a b
+$ legit.pl commit -m "first commit"
+*** TEST STOPPED: no output from legit.pl
+
+The correct 30 lines of output for this test were:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo line 1 >a
+$ echo hello world >b
+$ legit.pl add a b
+$ legit.pl commit -m "first commit"
+Committed as commit 0
+$ echo line 2 >>a
+$ legit.pl add a
+$ legit.pl commit -m "second commit"
+Committed as commit 1
+$ legit.pl log
+1 second commit
+0 first commit
+$ echo line 3 >>a
+$ legit.pl add a
+$ echo line 4 >>a
+$ legit.pl show 0:a
+line 1
+$ legit.pl show 1:a
+line 1
+line 2
+$ legit.pl show :a
+line 1
+line 2
+line 3
+$ legit.pl show 0:b
+hello world
+$ legit.pl show 1:b
+hello world
+
+The difference between your output(-) and the correct output(+) is:
+...
+  $ legit.pl commit -m "first commit"
+- *** TEST STOPPED: no output from legit.pl
++ Committed as commit 0
++ $ echo line 2 >>a
++ $ legit.pl add a
++ $ legit.pl commit -m "second commit"
++ Committed as commit 1
++ $ legit.pl log
++ 1 second commit
++ 0 first commit
++ $ echo line 3 >>a
++ $ legit.pl add a
++ $ echo line 4 >>a
++ $ legit.pl show 0:a
++ line 1
++ $ legit.pl show 1:a
++ line 1
++ line 2
++ $ legit.pl show :a
++ line 1
++ line 2
++ line 3
++ $ legit.pl show 0:b
++ hello world
++ $ legit.pl show 1:b
++ hello world
+
+
+
+
+
+
+Test subset0_7 (show errors) - failed (Incorrect output)
+Your program produced these 7 lines of output:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo line 1 >a
+$ echo hello world >b
+$ legit.pl add a b
+$ legit.pl commit -m "first commit"
+*** TEST STOPPED: no output from legit.pl
+
+The correct 13 lines of output for this test were:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo line 1 >a
+$ echo hello world >b
+$ legit.pl add a b
+$ legit.pl commit -m "first commit"
+Committed as commit 0
+$ legit.pl show :c
+legit.pl: error: 'c' not found in index
+$ legit.pl show 0:c
+legit.pl: error: 'c' not found in commit 0
+$ legit.pl show 2:a
+legit.pl: error: unknown commit '2'
+
+The difference between your output(-) and the correct output(+) is:
+...
+  $ legit.pl commit -m "first commit"
+- *** TEST STOPPED: no output from legit.pl
++ Committed as commit 0
++ $ legit.pl show :c
++ legit.pl: error: 'c' not found in index
++ $ legit.pl show 0:c
++ legit.pl: error: 'c' not found in commit 0
++ $ legit.pl show 2:a
++ legit.pl: error: unknown commit '2'
+
+
+
+
+Test subset0_8 (add, commit, no change, commit,) - failed (Incorrect output)
+Your program produced these 6 lines of output:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo 1 >a
+$ legit.pl add a
+$ legit.pl commit -m message1
+*** TEST STOPPED: no output from legit.pl
+
+The correct 10 lines of output for this test were:
+$ legit.pl init
+Initialized empty legit repository in .legit
+$ echo 1 >a
+$ legit.pl add a
+$ legit.pl commit -m message1
+Committed as commit 0
+$ touch a
+$ legit.pl add a
+$ legit.pl commit -m message2
+nothing to commit
+
+The difference between your output(-) and the correct output(+) is:
+...
+  $ legit.pl commit -m message1
+- *** TEST STOPPED: no output from legit.pl
++ Committed as commit 0
++ $ touch a
++ $ legit.pl add a
++ $ legit.pl commit -m message2
++ nothing to commit
+2 tests passed 6 tests failed
