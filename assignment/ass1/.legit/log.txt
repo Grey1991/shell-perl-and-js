@@ -1,2 +1,1 @@
-0 first commit
-1 second commit
+0 add a b

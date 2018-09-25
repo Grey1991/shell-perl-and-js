@@ -36,6 +36,41 @@ sub if_modify {
   return;
 }
 
+sub check_rm {
+  # rm before commit
+  die "legit.pl: error: your repository does not have any commits yet\n"
+    if is_folder_empty(".legit/commit");
+
+  # option 0:rm  1:rm --cached  2:rm --force [--cached]
+  $option = shift @_;
+
+  $last_index_number = -1;
+  open FILE, "<", ".legit/log.txt";
+  $last_index_number++ while (<FILE>);
+  close FILE;
+
+  foreach $file (@_) {
+    if (-f ".legit/commit/commit_$last_index_number/$file") {
+      # rm [--cached] files
+      die "legit.pl: error: '$file' in index is different to both working file and repository\n"
+        if (compare(".legit/index/$file",".legit/commit/commit_$last_index_number/$file")!=0)
+          && (compare("$file",".legit/commit/commit_$last_index_number/$file")!=0)
+          && (-f "$file");
+
+
+      die "legit.pl: error: '$file' has changes staged in the index\n"
+        unless compare(".legit/index/$file",".legit/commit/commit_$last_index_number/$file")==0;
+
+      # rm files
+      if ($option == 0) {
+        die "legit.pl: error: '$file' in repository is different to working file\n"
+          unless compare("$file",".legit/commit/commit_$last_index_number/$file")==0;
+      }
+    }
+  }
+}
+
+
 sub Add {
 
   # error if not init
@@ -198,11 +233,61 @@ sub Show {
   }
 }
 
+sub rm {
+  # error if not init
+  die "legit.pl: error: no .legit directory containing legit repository exists\n"
+    unless -d ".legit";
+
+  # error if nothing follow rm
+  die "usage: legit.pl rm [--force] [--cached] <filenames>\n"
+    unless @_;
+
+
+  # get options
+  $option1 = "";
+  $option2 = "";
+
+  if ($_[0] =~ /^\-\-/) {
+    $option1 = shift @_;
+    die "usage: legit.pl rm [--force] [--cached] <filenames>\n"
+      unless (@_)&&($option1 =~ /^\-\-(force|cached)$/);
+    if (@_ && ($_[0] =~ /^\-\-/)) {
+      $option2 = shift @_;
+      die "usage: legit.pl rm [--force] [--cached] <filenames>\n"
+        unless (@_)&&($option2 =~ /^\-\-(force|cached)$/);
+    }
+  }
+
+  # error if rm a file not in index
+  foreach $file (@_) {
+    check_filename(@_);
+    die "legit.pl: error: '$file' is not in the legit repository\n"
+      unless -f ".legit/index/$file";
+  }
+
+  # option 0:rm  1:rm --cached  2:rm --force [--cached]
+  $option = 0 unless $option1 || $option2;
+  $option = 1 if (($option1 eq "--cached")&&(!$option2))||(($option2 eq "--cached")&&(!$option1));
+  $option = 2 if ($option1 eq "--force") || ($option2 eq "--force");
+
+  # check errors
+  check_rm($option,@_) unless $option == 2;
+
+  # rm files
+  foreach $file (@_) {
+    unlink $file,".legit/index/$file" if $option == 0;
+    unlink ".legit/index/$file"
+      if ($option1 eq "--cached") || ($option2 eq "--cached");
+  }
+}
+
 $arg = shift @ARGV;
 Init()        if $arg eq "init";
 Add(@ARGV)    if $arg eq "add";
 Commit(@ARGV) if $arg eq "commit";
 Log(@ARGV)    if $arg eq "log";
 Show(@ARGV)   if $arg eq "show";
-if_modify(@ARGV) if $arg eq "diff";
-copy("a",".legit/index/a") if $arg eq "copy";
+rm(@ARGV)     if $arg eq "rm";
+
+
+# if_modify(@ARGV) if $arg eq "diff";
