@@ -50,26 +50,20 @@ sub check_rm {
   close FILE;
 
   foreach $file (@_) {
-    if (-f ".legit/commit/commit_$last_index_number/$file") {
-      # rm [--cached] files
-      die "legit.pl: error: '$file' in index is different to both working file and repository\n"
-        if (compare(".legit/index/$file",".legit/commit/commit_$last_index_number/$file")!=0)
-          && (compare("$file",".legit/commit/commit_$last_index_number/$file")!=0)
-          && (-f "$file");
+    die "legit.pl: error: '$file' in index is different to both working file and repository\n"
+      if (compare(".legit/index/$file",".legit/commit/commit_$last_index_number/$file")!=0)
+        && (compare("$file",".legit/index/$file")!=0)
+        && (-f "$file");
 
-
+    if ($option == 1) {
       die "legit.pl: error: '$file' has changes staged in the index\n"
         unless compare(".legit/index/$file",".legit/commit/commit_$last_index_number/$file")==0;
 
-      # rm files
-      if ($option == 0) {
-        die "legit.pl: error: '$file' in repository is different to working file\n"
-          unless compare("$file",".legit/commit/commit_$last_index_number/$file")==0;
-      }
+      die "legit.pl: error: '$file' in repository is different to working file\n"
+        unless compare("$file",".legit/commit/commit_$last_index_number/$file")==0;
     }
   }
 }
-
 
 sub Add {
 
@@ -80,12 +74,14 @@ sub Add {
   # error if add a non-exist file
   foreach $file (@_) {
     check_filename(@_);
-    die "legit.pl: error: can not open '$file'\n" unless -f $file;
+    die "legit.pl: error: can not open '$file'\n"
+      unless (-f $file)||(-f ".legit/index/$file");
   }
 
   # copy files to index
   foreach $file (@_) {
-    copy($file,".legit/index/$file");
+    unlink ".legit/index/$file" if (!-f $file)&&(-f ".legit/index/$file");
+    copy($file,".legit/index/$file") if -f $file;
   }
 }
 
@@ -123,7 +119,7 @@ sub Commit {
 
   # commit before add
   print "nothing to commit\n" and exit(0)
-    if is_folder_empty(".legit/index");
+    if (is_folder_empty(".legit/index"))&&(is_folder_empty(".legit/commit"));
 
   # add all files in index if -a
   if ($option eq "-a") {
@@ -265,17 +261,19 @@ sub rm {
       unless -f ".legit/index/$file";
   }
 
-  # option 0:rm  1:rm --cached  2:rm --force [--cached]
-  $option = 0 unless $option1 || $option2;
-  $option = 1 if (($option1 eq "--cached")&&(!$option2))||(($option2 eq "--cached")&&(!$option1));
-  $option = 2 if ($option1 eq "--force") || ($option2 eq "--force");
+  # option 0: rm --force [--cached]  1: rm  2: rm --cached
+  $option = 0;
+  $option = 1 unless $option1 || $option2;
+  $option = 2 if (($option1 eq "--cached")&&(!$option2))
+                || (($option2 eq "--cached")&&(!$option1));
 
   # check errors
-  check_rm($option,@_) unless $option == 2;
+  check_rm($option,@_) if $option > 0;
 
   # rm files
   foreach $file (@_) {
-    unlink $file,".legit/index/$file" if $option == 0;
+    unlink $file,".legit/index/$file"
+      unless ($option1 eq "--cached") || ($option2 eq "--cached");
     unlink ".legit/index/$file"
       if ($option1 eq "--cached") || ($option2 eq "--cached");
   }
