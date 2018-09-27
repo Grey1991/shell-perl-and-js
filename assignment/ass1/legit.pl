@@ -37,9 +37,6 @@ sub if_modify {
 }
 
 sub check_rm {
-  # rm before commit
-  die "legit.pl: error: your repository does not have any commits yet\n"
-    if is_folder_empty(".legit/commit");
 
   # option 0:rm  1:rm --cached  2:rm --force [--cached]
   $option = shift @_;
@@ -64,6 +61,7 @@ sub check_rm {
     }
   }
 }
+
 
 sub Add {
 
@@ -238,6 +236,9 @@ sub rm {
   die "usage: legit.pl rm [--force] [--cached] <filenames>\n"
     unless @_;
 
+  # rm before commit
+  die "legit.pl: error: your repository does not have any commits yet\n"
+    if is_folder_empty(".legit/commit");
 
   # get options
   $option1 = "";
@@ -279,6 +280,68 @@ sub rm {
   }
 }
 
+sub status {
+
+  # error if not init
+  die "legit.pl: error: no .legit directory containing legit repository exists\n"
+    unless -d ".legit";
+
+  # status before commit
+  die "legit.pl: error: your repository does not have any commits yet\n"
+    if is_folder_empty(".legit/commit");
+
+  # get the last commit_index
+  $last_index_number = -1;
+  open FILE, "<", ".legit/log.txt";
+  $last_index_number++ while (<FILE>);
+  close FILE;
+  $last_commit = ".legit/commit/commit_$last_index_number";
+
+  # use a dictionary to store file status
+
+  foreach $file (glob ".legit/index/*") {
+    $filename = basename($file);
+    $file_status{$filename} = "$filename - same as repo\n"
+      if (compare($file,"$last_commit/$filename") == 0)&&(compare($file,$filename)==0);
+    $file_status{$filename} = "$filename - file changed, changes not staged for commit\n"
+      if (compare($file,"$last_commit/$filename")==0)&&(compare($file,$filename)!=0)
+          &&(-f $filename);
+    $file_status{$filename} = "$filename - file changed, changes staged for commit\n"
+      if (compare($file,"$last_commit/$filename")!=0)&&(compare($file,$filename)==0);
+    $file_status{$filename} = "$filename - file changed, different changes staged for commit\n"
+      if (compare($file,"$last_commit/$filename")!=0)&&(compare($file,$filename)!=0)
+          &&(-f $filename)&&(-f "$last_commit/$filename");
+    $file_status{$filename} = "$filename - file deleted\n"
+      if (compare($file,".legit/index/$filename")==0)&&(!-f $filename);
+    $file_status{$filename} = "$filename - added to index\n"
+      unless (compare($file,".legit/index/$filename")==0)||(-f $filename);
+    $file_status{$filename} = "$filename - added to index\n"
+      unless -f "$last_commit/$filename";
+  }
+
+  foreach $file (glob "$last_commit/*") {
+    $filename = basename($file);
+    unless (exists $file_status{$filename}) {
+      $file_status{$filename} = "$filename - deleted\n"
+        unless -f $filename;
+      $file_status{$filename} = "$filename - untracked\n"
+        if -f $filename;
+    }
+  }
+
+  foreach $file (glob "./*") {
+    $filename = basename($file);
+    $file_status{$filename} = "$filename - untracked\n"
+      unless exists $file_status{$filename};
+  }
+  # print status
+  foreach $file(sort keys %file_status){
+    print $file_status{$file};
+  }
+}
+
+
+
 $arg = shift @ARGV;
 Init()        if $arg eq "init";
 Add(@ARGV)    if $arg eq "add";
@@ -286,6 +349,7 @@ Commit(@ARGV) if $arg eq "commit";
 Log(@ARGV)    if $arg eq "log";
 Show(@ARGV)   if $arg eq "show";
 rm(@ARGV)     if $arg eq "rm";
+status(@ARGV) if $arg eq "status";
 
 
 # if_modify(@ARGV) if $arg eq "diff";

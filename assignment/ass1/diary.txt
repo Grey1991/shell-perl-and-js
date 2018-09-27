@@ -1,0 +1,20 @@
+Date      Start     Stop      Activity      Comments
+23/09/18  09:00     10:30     coding        implemented init, add
+23/09/18  10:30     11:00     debugging     fix bug in add function
+23/09/18  11:00     13:00     coding        implemented commit function
+23/09/18  13:00     14:00     debugging     fix commit no change
+23/09/18  15:00     15:40     coding        implemented log function
+23/09/18  15:50     17:10     coding        implemented show function
+23/09/18  17:10     18:50     debugging     fix bug in show and commit function
+23/09/18  20:20     21:30     testing       fix bug in commit and add to pass autotest_subset0
+24/09/18  14:20     16:30     coding        implemented commit -a function
+24/09/18  16:30     18:30     debugging     fix bug in commit -m
+24/09/18  18:30     18:40     testing       pass autotest_subset1 commit -a part
+25/09/18  14:30     16:50     coding        implemented rm function
+25/09/18  16:50     17:30     debugging     fix bug in rm --cached
+25/09/18  19:30     21:30     coding        implemented rm errors
+25/09/18  21:30     22:50     debugging     fix bug in rm errors
+25/09/18  22:50     23:00     testing       pass autotest_subset1 rm part
+26/09/18  15:30     17:00     coding        implemented status function
+26/09/18  17:00     18:30     debugging     fix bug in status function
+26/09/18  18:30     18:40     testing       pass autotest_subset1

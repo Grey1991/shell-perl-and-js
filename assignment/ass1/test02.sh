@@ -1,45 +1,33 @@
 #!/bin/sh
-# Test subset1_14 (rm errors) - failed (Incorrect output)
+# test add commit log show
 rm -rf .legit
-
 ./legit.pl init
 # Initialized empty legit repository in .legit
-echo 1 >a
-echo 2 >b
-echo 3 >c
-./legit.pl add a b c
+echo line 1 >a
+echo hello world >b
+./legit.pl add a b
 ./legit.pl commit -m "first commit"
 # Committed as commit 0
-echo 4 >>a
-echo 5 >>b
-echo 6 >>c
-echo 7 >d
-echo 8 >e
-./legit.pl add b c d
-echo 9 >b
-./legit.pl rm a
-# legit.pl: error: 'a' in repository is different to working file
-./legit.pl rm b
-# legit.pl: error: 'b' in index is different to both working file and repository
-./legit.pl rm c
-# legit.pl: error: 'c' has changes staged in the index
-./legit.pl rm d
-# legit.pl: error: 'd' has changes staged in the index
-./legit.pl rm e
-# legit.pl: error: 'e' is not in the legit repository
-./legit.pl rm --cached a
-./legit.pl rm --cached b
-# legit.pl: error: 'b' in index is different to both working file and repository
-./legit.pl rm --cached c
-./legit.pl rm --cached d
-./legit.pl rm --cached e
-# legit.pl: error: 'e' is not in the legit repository
-./legit.pl rm --force a
-# legit.pl: error: 'a' is not in the legit repository
-./legit.pl rm --force b
-./legit.pl rm --force c
-# legit.pl: error: 'c' is not in the legit repository
-./legit.pl rm --force d
-# legit.pl: error: 'd' is not in the legit repository
-./legit.pl rm --force e
-# legit.pl: error: 'e' is not in the legit repository
+echo line 2 >>a
+./legit.pl add a
+./legit.pl commit -m "second commit"
+# Committed as commit 1
+./legit.pl log
+# 1 second commit
+# 0 first commit
+echo line 3 >>a
+./legit.pl add a
+echo line 4 >>a
+./legit.pl show 0:a
+# line 1
+./legit.pl show 1:a
+# line 1
+# line 2
+./legit.pl show :a
+# line 1
+# line 2
+# line 3
+./legit.pl show 0:b
+# hello world
+./legit.pl show 1:b
+# hello world
