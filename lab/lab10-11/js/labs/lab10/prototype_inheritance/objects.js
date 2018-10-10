@@ -19,6 +19,7 @@
 
 function Animal(age) {
     this.age = age
+    
 }
 
 Animal.prototype.makeSound = function() {
@@ -26,6 +27,6 @@ Animal.prototype.makeSound = function() {
 }
 
 function Dog() {
-
+    //asdasdasdasd
 }
 module.exports = Dog;
