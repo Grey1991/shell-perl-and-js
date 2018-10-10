@@ -18,15 +18,22 @@
  */
 
 function Animal(age) {
-    this.age = age
-    
+    this.age = age;
 }
 
 Animal.prototype.makeSound = function() {
-    console.log(this.sound)
+    console.log(this.sound);
 }
 
-function Dog() {
-    //asdasdasdasd
+function Dog(name, age) {
+    Animal.call(this,age);
+    this.name = name;
+    this.sound = 'woof';
+    this.toHumanYears = function(){
+        return this.age * 7;
+    }
+
 }
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.makeSound = Animal.prototype.makeSound;
 module.exports = Dog;
