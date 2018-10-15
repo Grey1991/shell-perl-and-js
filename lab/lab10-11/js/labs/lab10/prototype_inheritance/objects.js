@@ -34,6 +34,7 @@ function Dog(name, age) {
     }
 
 }
-Dog.prototype = Object.create(Animal.prototype);
-Dog.prototype.makeSound = Animal.prototype.makeSound;
+// Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype = Animal.prototype;
+// Dog.prototype.makeSound = Animal.prototype.makeSound;
 module.exports = Dog;
