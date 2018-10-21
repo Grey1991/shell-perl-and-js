@@ -1,6 +1,0 @@
-#!/usr/bin/perl -w
-$username = "andrewt";
-open F,'<',"accounts/$username/password" or die;
-$true_password = <F>;
-close F;
-print $true_password;
