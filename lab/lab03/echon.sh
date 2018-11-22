@@ -6,7 +6,7 @@ then
 fi
 if test $1 -ge 0 2>/dev/null
 then
-	for ((i=0;i<$1;i++)); do
+	for ((i=0;i<$1;i++)) do
 		echo $2
 	done
 else
